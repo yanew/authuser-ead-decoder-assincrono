@@ -9,12 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ead.authuser.clients.CourseClient;
-import com.ead.authuser.models.UserCourseModel;
 import com.ead.authuser.models.UserModel;
-import com.ead.authuser.repositories.UserCourseRepository;
 import com.ead.authuser.repositories.UserRepository;
 import com.ead.authuser.services.UserService;
 
@@ -25,9 +22,6 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     
     @Autowired
-    UserCourseRepository userCourseRepository;
-    
-    @Autowired
     CourseClient courseClient; 
 
     @Override
@@ -35,31 +29,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    @Transactional
     @Override
-    public Optional<UserModel> findById(UUID userId) {
-    	List<UserCourseModel> userCourseModelList = userCourseRepository.findAllUserCourseIntoUser(userId);
-    	if(!userCourseModelList.isEmpty()) {
-    		userCourseRepository.deleteAll(userCourseModelList);
-    	}
-    	
+    public Optional<UserModel> findById(UUID userId) {    	
         return userRepository.findById(userId);
     }
 
-    @Transactional
     @Override
     public void delete(UserModel userModel){
-    	boolean deleteUserCourseInCourse = false;
-    	List<UserCourseModel> userCourseModelList = 
-    			userCourseRepository.findAllUserCourseIntoUser(userModel.getUserId());
-    	if(!userCourseModelList.isEmpty()) {
-    		userCourseRepository.deleteAll(userCourseModelList);
-    		deleteUserCourseInCourse = true;
-    	}
-        userRepository.delete(userModel);
-        if(deleteUserCourseInCourse) {
-        	courseClient.deleteUserInCourse(userModel.getUserId());
-        }
+    	userRepository.delete(userModel);
     }
 
 	@Override
