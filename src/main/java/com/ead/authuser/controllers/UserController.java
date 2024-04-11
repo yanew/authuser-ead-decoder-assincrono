@@ -71,7 +71,7 @@ public class UserController {
         if(!userModelOptional.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UsuÃ¡rio nÃ£o encontrado!");
         }else{
-            userService.delete(userModelOptional.get());
+            userService.deleteUser(userModelOptional.get());
             return ResponseEntity.status(HttpStatus.OK).body("UsuÃ¡rio deletado com sucesso!");
         }
     }
@@ -90,7 +90,7 @@ public class UserController {
         	userModel.setCpf(userDto.getCpf());
         	userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         	
-            userService.save(userModel);
+            userService.updateUser(userModel);
             return ResponseEntity.status(HttpStatus.OK).body("UsuÃ¡rio atualizado com sucesso!");
         }
     }
@@ -113,7 +113,7 @@ public class UserController {
         		userModel.setPassword(userDto.getPassword());
             	userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
             	
-                userService.save(userModel);
+                userService.updatePassword(userModel);
                 return ResponseEntity.status(HttpStatus.OK).body("UsuÃ¡rio atualizado com sucesso!");	
         	}
         }
@@ -131,7 +131,7 @@ public class UserController {
         	userModel.setImageUrl(userDto.getImageUrl());
         	userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         	
-            userService.save(userModel);
+            userService.updateUser(userModel);
             return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
     }

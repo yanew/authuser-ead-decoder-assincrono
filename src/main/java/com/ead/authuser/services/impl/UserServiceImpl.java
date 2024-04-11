@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ead.authuser.clients.CourseClient;
 import com.ead.authuser.enums.ActionType;
@@ -64,10 +65,30 @@ public class UserServiceImpl implements UserService {
 		return userRepository.findAll(spec, pageable);
 	}
 
+	@Transactional
 	@Override
 	public UserModel saveUser(UserModel userModel) {
 		userModel = this.save(userModel);
 		userEventPublisher.publisUserEvent(userModel.convertToUserEventDto(), ActionType.CREATE);
 		return userModel;
+	}
+
+	@Override
+	public void deleteUser(UserModel userModel) {
+		this.delete(userModel);
+		userEventPublisher.publisUserEvent(userModel.convertToUserEventDto(), ActionType.DELETE);
+	}
+
+	@Transactional
+	@Override
+	public UserModel updateUser(UserModel userModel) {
+		userModel = this.save(userModel);
+		userEventPublisher.publisUserEvent(userModel.convertToUserEventDto(), ActionType.UPDATE);
+		return userModel;
+	}
+
+	@Override
+	public UserModel updatePassword(UserModel userModel) {
+		return this.save(userModel);
 	}
 }

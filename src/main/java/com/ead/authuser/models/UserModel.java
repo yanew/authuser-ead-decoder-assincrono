@@ -51,7 +51,7 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
     private UserType userType;
     @Column(length = 20)
     private String phoneNumber;
-    @Column(length = 11)
+    @Column(length = 14)
     private String cpf;
     @Column
     private String imageUrl;
