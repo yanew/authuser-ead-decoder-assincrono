@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ead.authuser.dtos.UserDto;
+import com.ead.authuser.enums.RoleType;
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
+import com.ead.authuser.models.RoleModel;
 import com.ead.authuser.models.UserModel;
+import com.ead.authuser.services.RoleService;
 import com.ead.authuser.services.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -32,6 +36,12 @@ public class AuthenticationController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	RoleService roleService;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<Object> registerUser(@RequestBody @Validated(UserDto.UserView.RegistrationPost.class)
@@ -47,12 +57,17 @@ public class AuthenticationController {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Este email ja foi cadastrado!");
 		}
 		
+		RoleModel roleModel = roleService.findByRoleName(RoleType.ROLE_STUDENT).
+									orElseThrow(()-> new RuntimeException("Erro: Papel não encontrado!"));
+		
+		userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		var userModel = new UserModel();
 		BeanUtils.copyProperties(userDto, userModel);
 		userModel.setUserStatus(UserStatus.ACTIVE);
 		userModel.setUserType(UserType.STUDENT);
 		userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
 		userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+		userModel.getRoles().add(roleModel);
 		this.userService.saveUser(userModel);
 		log.debug("POST registerUser userModel salvo {}", userModel.getUserId());
 		log.info("Usuario {} salvo com sucesso", userModel.getUsername());
