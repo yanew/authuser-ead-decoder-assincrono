@@ -1,17 +1,18 @@
 package com.ead.authuser.configs.security;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -38,6 +39,28 @@ public class JwtProvider {
 				setExpiration(expiracao).
 				signWith(SignatureAlgorithm.HS512, jwtSecret).
 				compact();
+	}
+	
+	public String getUsernameJwt(String token) {
+		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+	}
+	
+	public boolean validateJwt(String authToken) {
+		try {
+			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+			return true;
+		}catch (SignatureException e) {
+			log.error("JWT signature inválida: {}", e.getMessage());
+		}catch (MalformedJwtException e) {
+			log.error("Token JWT inválido: {}", e.getMessage());
+		}catch (ExpiredJwtException e) {
+			log.error("Token JWT está expirado: {}", e.getMessage());
+		}catch (UnsupportedJwtException e) {
+			log.error("Token JWT não é suportado: {}", e.getMessage());
+		}catch (IllegalArgumentException e) {
+			log.error("JWT claims string está vazia: {}", e.getMessage());
+		}
+		return false;
 	}
 	
 	/*public static void main(String[] args) {
