@@ -1,6 +1,7 @@
 package com.ead.authuser.configs.security;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -27,21 +28,25 @@ public class JwtProvider {
 	
 	
 	public String generateJwt(Authentication authentication) {
-		UserDetails userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+		
+		final String roles = userPrincipal.getAuthorities().stream().
+				map(role -> {return role.getAuthority();}).collect(Collectors.joining(","));
 		
 		long hojeMs = (new Date()).getTime();
 		Date expiracao = new Date(hojeMs + Long.valueOf(jwtExpirationMs));
 		//Da pra fazer com DateFormat tb, creio eu.
 		
 		return Jwts.builder().
-				setSubject(userPrincipal.getUsername()).
+				setSubject(userPrincipal.getUserId().toString()).
+				claim("roles", roles).
 				setIssuedAt(new Date()).
 				setExpiration(expiracao).
 				signWith(SignatureAlgorithm.HS512, jwtSecret).
 				compact();
 	}
 	
-	public String getUsernameJwt(String token) {
+	public String getSubjectJwt(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
 	}
 	
