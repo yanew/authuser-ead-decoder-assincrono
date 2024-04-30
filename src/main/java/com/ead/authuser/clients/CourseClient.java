@@ -10,6 +10,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -38,21 +40,26 @@ public class CourseClient {
 	
 	//@Retry(name = "retryInstance", fallbackMethod = "retryFallback")
 	@CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "circuitBreakerFallback"*/)
-	public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable){
+	public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable, String token){
 		List<CourseDto> searchResult = null;
 		String url = REQUEST_URL_COURSE + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", token);
+		HttpEntity<String> requestEntity = new HttpEntity<String>("parameters", headers);
+		
 		log.debug("Request URL: {}", url);
 		log.info("Request URL: {}", url);
 		
-		System.out.println("VAI CHAMAR COURSE");
-		try {
+		/*System.out.println("VAI CHAMAR COURSE");
+		try {*/
 			ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {}; 
-			ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
+			ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType);
 			searchResult = result.getBody().getContent();
 			log.debug("Response number of elements: {}", searchResult.size());
-		}catch(HttpStatusCodeException e ) {
+		/*}catch(HttpStatusCodeException e ) {
 			log.error("Error request /courses {}", e);
-		}
+		}*/
 		log.info("Ending request /courses userId {}", userId);
 		return new PageImpl<>(searchResult);
 	}
