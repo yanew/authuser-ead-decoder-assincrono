@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.ead</groupId>
-	<artifactId>course</artifactId>
+	<artifactId>authuser</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>course</name>
+	<name>authuser</name>
 	<description>Projeto ead do curso Decoder</description>
 	<properties>
 		<java.version>11</java.version>
