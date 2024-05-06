@@ -15,7 +15,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.ead.authuser.dtos.CourseDto;
@@ -35,7 +34,7 @@ public class CourseClient {
 	@Autowired
 	UtilsService utilsService;
 	
-	//@Value("${ead.api.url.course}")
+	@Value("${ead.api.url.course}")
 	String REQUEST_URL_COURSE = "http://ead-course-service/ead-course";
 	
 	//@Retry(name = "retryInstance", fallbackMethod = "retryFallback")
