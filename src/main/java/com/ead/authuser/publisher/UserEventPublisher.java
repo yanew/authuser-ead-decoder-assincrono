@@ -14,8 +14,8 @@ public class UserEventPublisher {
 	@Autowired
 	RabbitTemplate rabbitTemplate;
 	
-	@Value(value = "${ead.broker.exchange.userEvent}")
-	private String exchangeUserEvent;
+	//@Value(value = "${ead.broker.exchange.userEvent}")
+	private String exchangeUserEvent = "ead.userevent";
 	
 	public void publisUserEvent(UserEventDto userEventDto, ActionType actionType) {
 		userEventDto.setActionType(actionType.toString());
