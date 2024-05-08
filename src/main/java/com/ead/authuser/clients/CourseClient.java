@@ -40,6 +40,7 @@ public class CourseClient {
 	//@Retry(name = "retryInstance", fallbackMethod = "retryFallback")
 	@CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "circuitBreakerFallback"*/)
 	public Page<CourseDto> getAllCoursesByUser(UUID userId, Pageable pageable, String token){
+		log.info("ENTROU getAllCoursesByUser DO CourseClient");
 		List<CourseDto> searchResult = null;
 		String url = REQUEST_URL_COURSE + utilsService.createUrlGetAllCoursesByUser(userId, pageable);
 		
@@ -49,11 +50,12 @@ public class CourseClient {
 		
 		log.debug("Request URL: {}", url);
 		log.info("Request URL: {}", url);
-		
+		log.info("VAI CHAMAR COURSE");
 		/*System.out.println("VAI CHAMAR COURSE");
 		try {*/
 			ParameterizedTypeReference<ResponsePageDto<CourseDto>> responseType = new ParameterizedTypeReference<ResponsePageDto<CourseDto>>() {}; 
 			ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, requestEntity, responseType);
+			log.info("POS CHAMAR COURSE");
 			searchResult = result.getBody().getContent();
 			log.debug("Response number of elements: {}", searchResult.size());
 		/*}catch(HttpStatusCodeException e ) {

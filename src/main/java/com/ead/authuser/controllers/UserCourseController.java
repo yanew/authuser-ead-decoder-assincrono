@@ -3,6 +3,7 @@ package com.ead.authuser.controllers;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -39,6 +40,7 @@ public class UserCourseController {
 			@PageableDefault(page = 0, size = 1, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
 			@PathVariable(value = "userId") UUID userId,
 			@RequestHeader("Authorization") String token){
+		log.info("Entrou getAllCoursesByUser");
 		Optional<UserModel> userModelOptional = userService.findById(userId);
 		if(!userModelOptional.isPresent()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado!");
