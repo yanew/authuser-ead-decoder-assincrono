@@ -35,7 +35,7 @@ public class CourseClient {
 	UtilsService utilsService;
 	
 	@Value("${ead.api.url.course}")
-	String REQUEST_URL_COURSE = "http://ead-course-service/ead-course";
+	String REQUEST_URL_COURSE;
 	
 	//@Retry(name = "retryInstance", fallbackMethod = "retryFallback")
 	@CircuitBreaker(name = "circuitbreakerInstance"/*, fallbackMethod = "circuitBreakerFallback"*/)
